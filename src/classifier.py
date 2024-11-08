@@ -2,7 +2,6 @@ from werkzeug.datastructures import FileStorage
 
 def classify_file(file: FileStorage):
     filename = file.filename.lower()
-    # file_bytes = file.read()
 
     if "drivers_license" in filename:
         return "drivers_licence"
