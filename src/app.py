@@ -1,19 +1,14 @@
 from fastapi import FastAPI, UploadFile, HTTPException
 
 from src.classifier import classify_file
+from src.utils import allowed_file
 
 
 app = FastAPI()
 
-ALLOWED_EXTENSIONS = {"pdf", "png", "jpg"}
 
-
-def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-@app.post("/classify_file")
-def classify_file_route(file: UploadFile):
+@app.post("/file-classification")
+def file_classification(file: UploadFile):
     if file.filename == "":
         raise HTTPException(status_code=400, detail="No selected file")
 

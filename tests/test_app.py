@@ -27,14 +27,14 @@ def test_allowed_file(filename, expected):
 
 def test_no_file_in_request(test_client):
     """No file gets caught by the request validation"""
-    response = test_client.post("/classify_file")
+    response = test_client.post("/file-classification")
     assert response.status_code == 422
 
 
 def test_no_selected_file(test_client):
     """No filename gets caught by the request validation"""
     data = {"file": ("", BytesIO(b""))}  # Empty filename
-    response = test_client.post("/classify_file", files=data)
+    response = test_client.post("/file-classification", files=data)
     assert response.status_code == 422
 
 
@@ -42,6 +42,6 @@ def test_success(test_client, mocker):
     mocker.patch("src.app.classify_file", return_value="test_class")
 
     data = {"file": ("file.pdf", BytesIO(b"dummy content"))}
-    response = test_client.post("/classify_file", files=data)
+    response = test_client.post("/file-classification", files=data)
     assert response.status_code == 200
     assert response.json() == {"file_class": "test_class"}
