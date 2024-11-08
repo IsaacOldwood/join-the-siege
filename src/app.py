@@ -1,29 +1,19 @@
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, UploadFile, HTTPException
 
-from src.classifier import classify_file
-app = Flask(__name__)
+from src.utils import allowed_file
+from src.services import classify as classify_service
 
-ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg'}
+app = FastAPI()
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/classify_file', methods=['POST'])
-def classify_file_route():
-
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part in the request"}), 400
-
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+@app.post("/file-classification")
+async def file_classification(file: UploadFile):
+    if file.filename == "":
+        raise HTTPException(status_code=400, detail="No selected file")
 
     if not allowed_file(file.filename):
-        return jsonify({"error": f"File type not allowed"}), 400
+        raise HTTPException(status_code=400, detail="File extension unsupported")
 
-    file_class = classify_file(file)
-    return jsonify({"file_class": file_class}), 200
+    file_class = await classify_service.classify_file(file)
 
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    return {"file_class": file_class}

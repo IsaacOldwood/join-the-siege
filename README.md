@@ -1,3 +1,95 @@
+# Notes & Thought process
+
+1. Clean up repo
+    - There are some design choices that can be improved. The earlier these changes are done the easier they are to implement.
+        1. `requirements.txt` -> `pyproject.toml`. Moving to use pyproject allows all configuration for the project to be stored in one central location. This includes linter rules (ruff), dependencies, test config (pytest). It also allows easier splitting of dependencies and dev dependencies, this is valuable as we don't want production servers to install dev dependencies, this will keep it as lightweight as possible. At least the previous 3 python versions should be supported ideally too, this is possible to set in `pyproject.toml`. However I will be using `3.11` and not testing for previous compatibility for time.
+        1. Development data (the files in `files` directory) should not be checked into the repo. This bloats the repo and will slow down cloning, builds etc. These should be stored in a shared file location and the directory should be git ignored. Downloading the files from the shared location should be part of an initial repo/project setup step. This setup guide should be contained clearly in the readme.
+        1. Move utility functions out of `app.py`. `app.py` should be the top level/HTTP logic and nothing else. Utility functions should be moved to another file. I have created a `utils.py` file FOR NOW. `utils.py` is fine to have but can quickly grow and become a burden. It is very important that as functions get added they are grouped together and pulled into their own better named files.
+        1. `classify_file` is not a good name for an endpoint for two main reasons. `_` should be avoided in `URLs`, `-` should be used instead. Also it is widely accepted that endpoints should not be verbs. API endpoints should be nouns representing a resource. In this case it is a POST endpoint (POST = Create), so we are "creating" a file classification. This means we should rename it to `file-classification`. I would also rename the function to `file_classification`, I don't think `_route` is required as we know it's a route with it's decorator. If we were to register the endpoints in a different way it may be preferable in the future.
+        1. `ALLOWED_EXTENSIONS` should be a config variable. One reason is due to separating deployment and release, this can then allow this to be used like a feature flag.
+
+1. Overhaul current design to use familiar technologies
+    - For a basic RESTAPI I personally prefer using FastAPI. As the application is currently very simple swapping technologies/frameworks is possible. I find FastAPI to be easier. Easier meaning it required less code and knowledge to use. This allows for a faster development velocity. It has other improvements too. It is built on top of Pydantic which allows for easy request and object validation amongst many other things. It also automatically integrates with OpenAPI schema and swagger. All RestAPIs should have an OpenAPI compatible schema and swagger docs, so because FastAPI does that for you. We can spend more developer time building features and adding value. I also find testing FastAPI applications to be easier. And using FastAPI `Depends()` is a great way to comply with separation of concerns and Dependency Injection. Both of which improve testability. Better testing => less bugs (in theory).
+
+1. Improve extendability. Currently the classifier is used directly in `app.py`. However as we said above, that should be for top level/HTTP logic. There isn't anything wrong with this as it is in a function. But: 
+
+    What if we want to create different classifiers? 
+
+    How will they fit in? 
+
+    What if we want to allow users to post a URL to a file? 
+
+    What if we want to allow multiple files to be uploaded? 
+    
+    It isn't necessarily easy to expand and extend. There are a couple of ways we can improve this. Firstly we should decide on an interface for all our classifiers to use. Then we can create more classifiers and know they will slot into our app easily. We can either use an ABC or just duck typing to "enforce" this. We are not saying this interface will be set in stone but the more we can decide on now will reduce the burden of change later down the line. Ideally we would sit down in person with a whiteboard and do some brainstorming and designing but as it's just me we can imagine that part happened.
+
+    So now we have decided that classifiers should be a class. They can take in whatever they need in the `init` and then when we are ready the classification logic can be called using `classify()`. This leaves it very generic and does not tie us down to much to allow easy expansion. But now we have "service" logic in our HTTP layer. So this needs moving out, that way we can pass in different classifiers depending on what the endpoint receives. This also ties back into DI and easier testing. If you find yourself patching things you may have a great opportunity to [Hoist your I/O](https://www.youtube.com/watch?v=PBQN62oUnN8) and use Fakes instead. There isn't much in there now but it creates a place we can place logic that is application level but not strictly related to actually doing the classification.
+
+1. Scaling and async. Currently our application is entirely synchronous. Currently this isn't a problem as we have no heavy I/O operations. But in the future we might use some 3rd party API in our classification step. HTTP requests take a relatively long time so if our app can be classifying other things whilst we wait that will make the whole app scale better! If we start building it async now it will make our lives easier in the future. FastAPI endpoints can be async out the box so we just need to update our functions and everything should run smoothly.
+
+1. When is the best time to build the CI/CD pipeline? When you're ready to deploy to `prod` or even `dev` is not the right answer. The sooner the better. The sooner you can get feedback from your build pipeline the better. Build pipelines enforce LOTs of things that your app needs to follow. Even if you aren't sure where you are PUTTING your build (Azure, AWS, GCP, On-prem) it is still worth making sure the application (and your developers) are following all the guidelines you've agreed. Some things that should be enforced in the CI/CD pipeline:
+
+    - Linter rules - are all the ruff rules you've agreed to follow being adhered to?
+    - Tests - Do all your tests actually pass and on a machine that isn't yours?
+    - Test coverage - Please follow "Goodhart's law" and don't enforce this. But you should be aware of your test coverage.
+    - Does your application build successfully? This is where you realise you've not pinned a dependency and all of sudden the build breaks, and many other gotchas aren't revealed until this step
+    - Can your application be deployed? - Less necessary to start with
+
+    See `pipeline/pipeline.yml` for a quick example. To test, code coverage, check lint rules using Azure.
+
+    Side note: To deploy this application to production I would use Azure Serverless functions. This is currently a simple app and the less infra setup the better. Better to spend developer time on features for clients than infra and hosting. If necessary it can be moved in the future. It is also very easy to control access then. Can easily wrap it in API key auth etc.
+
+1. Now our app is ready to be worked on. Because we have spent the time laying the ground work we can quickly add new features and improvements. This will pay dividends going forward. Further improvements:
+ 
+    - Crudely classify by file contents
+    - Train some ML models to classify based on contents, filename, client, industry etc
+    - Use pre-trained models. ChatGPT or one of many others. This would be my first approach as there is no point wasting time and resources if ChatGPT can give a half decent answer.
+    - Use a multi-model approach. Try and use cheaper, faster methods. If they don't work then pass the file to a more advanced ML model.
+    - Allow other upload methods. Allow users to post a URL link to the file. We can then download and classify the file.
+    - When a user uploads a file we fail to classify, save it somewhere and raise it in a dashboard/alert channel.
+    - When a user uploads a file not currently supprted, save it and raise it. If lots of people are trying type X then maybe we should spend some time there.
+
+    The MAIN thing to keep in mind is "Our highest priority is to satisfy the customer through early and continuous delivery of valuable software." There is no point spending weeks on features you THINK people want. Get SOMETHING into the hands of users and see how they use it and if they actually like it.
+
+Thank you for looking at my repo.
+
+# File Classifier
+
+## Overview
+
+A RestAPI to classify files.
+
+## First time project setup
+
+(Assuming Windows)
+
+1. Copy development files from shared location into `local-files` dir
+1. Create `.env` file for environment variables. These values can be fetched from the `dev` environment
+1. Install project as editable install (include dev dependencies)
+
+    ```shell
+    python -m venv venv
+    venv\Scripts\activate
+    py -m pip install -e .[dev]
+    ```
+
+1. Run the app
+
+    ```shell
+    py -m uvicorn app:app --reload
+    ```
+
+1. Navigate to [swagger docs](http://127.0.0.1:8000/docs)
+
+## Testing
+
+Run tests using pytest
+
+```shell
+py -m pytest
+```
+
+---
 # Heron Coding Challenge - File Classifier
 
 ## Overview

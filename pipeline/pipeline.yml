@@ -1,0 +1,68 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - develop
+
+pool: { { pool } }
+
+parameters:
+  - name: code_check
+    displayName: Check code quality only
+    type: boolean
+    default: false
+
+variables:
+  - name: python_version
+    value: "3.11"
+
+
+stages:
+  - stage: Quality
+    displayName: Code Quality
+    jobs:
+      - job: Tests
+        displayName: Code Quality
+        steps:
+          - task: UsePythonVersion@0
+            displayName: "Use Python ${{ variables.python_version }}"
+            inputs:
+              versionSpec: "${{ variables.python_version }}"
+
+          - task: Bash@3
+            displayName: Install Dependencies & Source Code
+            inputs:
+              targetType: "inline"
+              script: |
+                pip install --upgrade pip
+                pip install -e .[dev]
+
+          - task: Bash@3
+            displayName: Run tests and produce coverage report
+            inputs:
+              targetType: "inline"
+              script: |
+                pytest --cov=src --junitxml=$(System.DefaultWorkingDirectory)/test-results.xml --cov-report xml:$(System.DefaultWorkingDirectory)/coverage.xml
+
+          - task: Bash@3
+            displayName: Ruff Linter
+            inputs:
+              targetType: "inline"
+              script: ruff check
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFiles: "$(System.DefaultWorkingDirectory)/test-results.xml"
+              failTaskOnFailedTests: true
+
+          - task: PublishCodeCoverageResults@2
+            inputs:
+              summaryFileLocation: "$(System.DefaultWorkingDirectory)/coverage.xml"
+  
+  - stage: Build
+    displayName: Build
+    dependsOn: Quality
+    condition: eq('${{ parameters.code_check_only }}', false)
+    jobs:
+      - job: Build
+      ...
