@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, HTTPException
 
 from classifiers.filename import FilenameClassifier
 from src.utils import allowed_file
-
+from src.services import classify as classify_service
 
 app = FastAPI()
 
@@ -16,6 +16,6 @@ def file_classification(file: UploadFile):
         raise HTTPException(status_code=400, detail="File extension unsupported")
 
     classifier = FilenameClassifier(file)
-    file_class = classifier.classify()
+    file_class = classify_service.classify(classifier)
     
     return {"file_class": file_class}
