@@ -37,6 +37,14 @@ def test_no_selected_file(test_client):
     response = test_client.post("/file-classification", files=data)
     assert response.status_code == 422
 
+def test_not_supported_file_type(test_client):
+    data = {"file": ("test.xyv", BytesIO(b"some content"))}
+    
+    response = test_client.post("/file-classification", files=data)
+    
+    assert response.status_code == 400
+    assert "unsupported" in response.json()["detail"]
+
 
 def test_success(test_client, mocker):
     mocker.patch("src.app.classify_file", return_value="test_class")

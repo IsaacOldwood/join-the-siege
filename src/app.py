@@ -13,7 +13,7 @@ def file_classification(file: UploadFile):
         raise HTTPException(status_code=400, detail="No selected file")
 
     if not allowed_file(file.filename):
-        raise HTTPException(status_code=400, detail="File extension not allowed")
+        raise HTTPException(status_code=400, detail="File extension unsupported")
 
     file_class = classify_file(file)
     return {"file_class": file_class}
