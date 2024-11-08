@@ -13,9 +13,10 @@ import pytest
         ("aiwhgbipawebg.txt", "unknown file"),
     ],
 )
-def test_filename_classifier(filename, expected):
+@pytest.mark.asyncio
+async def test_filename_classifier(filename, expected):
     classifier = FilenameClassifier(UploadFile(filename=filename, file=BytesIO(b"")))
 
-    result = classifier.classify()
+    result = await classifier.classify()
 
     assert result == expected

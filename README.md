@@ -25,6 +25,7 @@
 
     So now we have decided that classifiers should be a class. They can take in whatever they need in the `init` and then when we are ready the classification logic can be called using `classify()`. This leaves it very generic and does not tie us down to much to allow easy expansion. But now we have "service" logic in our HTTP layer. So this needs moving out, that way we can pass in different classifiers depending on what the endpoint receives. This also ties back into DI and easier testing. If you find yourself patching things you may have a great opportunity to [Hoist your I/O](https://www.youtube.com/watch?v=PBQN62oUnN8) and use Fakes instead. There isn't much in there now but it creates a place we can place logic that is application level but not strictly related to actually doing the classification.
 
+1. Scaling and async. Currently our application is entirely synchronous. Currently this isn't a problem as we have no heavy I/O operations. But in the future we might use some 3rd party API in our classification step. HTTP requests take a relatively long time so if our app can be classifying other things whilst we wait that will make the whole app scale better! If we start building it async now it will make our lives easier in the future. FastAPI endpoints can be async out the box so we just need to update our functions and everything should run smoothly.
 
 # File Classifier
 

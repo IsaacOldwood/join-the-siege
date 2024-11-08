@@ -1,6 +1,6 @@
 from src.classifiers.filename import FilenameClassifier
 
-def classify(classifier: FilenameClassifier):
+async def classify(classifier: FilenameClassifier):
     """A service to classify a file.
 
     Args:
@@ -10,4 +10,4 @@ def classify(classifier: FilenameClassifier):
         str: The classification of the file.
     """
     
-    return classifier.classify()
+    return await classifier.classify()

@@ -6,7 +6,7 @@ class FilenameClassifier:
         """Classify a file based on its name."""
         self.file = file
 
-    def classify(self):
+    async def classify(self):
         """Classify the file based on its name."""
 
         filename = self.file.filename.lower()

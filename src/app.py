@@ -8,7 +8,7 @@ app = FastAPI()
 
 
 @app.post("/file-classification")
-def file_classification(file: UploadFile):
+async def file_classification(file: UploadFile):
     if file.filename == "":
         raise HTTPException(status_code=400, detail="No selected file")
 
@@ -16,6 +16,6 @@ def file_classification(file: UploadFile):
         raise HTTPException(status_code=400, detail="File extension unsupported")
 
     classifier = FilenameClassifier(file)
-    file_class = classify_service.classify(classifier)
+    file_class = await classify_service.classify(classifier)
     
     return {"file_class": file_class}
