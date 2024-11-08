@@ -21,8 +21,12 @@ def test_client():
         ("file", False),
     ],
 )
-def test_allowed_file(filename, expected):
-    assert allowed_file(filename) == expected
+def test_allowed_file(filename, expected, app_settings):
+    app_settings({"ALLOWED_EXTENSIONS": "pdf,png,jpg"})
+
+    result = allowed_file(filename)
+
+    assert result == expected
 
 
 def test_no_file_in_request(test_client):
@@ -37,16 +41,19 @@ def test_no_selected_file(test_client):
     response = test_client.post("/file-classification", files=data)
     assert response.status_code == 422
 
-def test_not_supported_file_type(test_client):
+
+def test_not_supported_file_type(test_client, app_settings):
+    app_settings({"ALLOWED_EXTENSIONS": "pdf,png,jpg"})
     data = {"file": ("test.xyv", BytesIO(b"some content"))}
-    
+
     response = test_client.post("/file-classification", files=data)
-    
+
     assert response.status_code == 400
     assert "unsupported" in response.json()["detail"]
 
 
-def test_success(test_client, mocker):
+def test_success(test_client, mocker, app_settings):
+    app_settings({"ALLOWED_EXTENSIONS": "pdf,png,jpg"})
     mocker.patch("src.app.classify_file", return_value="test_class")
 
     data = {"file": ("file.pdf", BytesIO(b"dummy content"))}

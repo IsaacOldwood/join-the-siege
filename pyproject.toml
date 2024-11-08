@@ -7,7 +7,12 @@ name = "join_the_seige"
 version = "0"
 requires-python = ">= 3.11"
 
-dependencies = ["fastapi~=0.115.4", "python-multipart~=0.0.17", "uvicorn[standard]~=0.32.0"]
+dependencies = [
+    "fastapi~=0.115.4",
+    "python-multipart~=0.0.17",
+    "uvicorn[standard]~=0.32.0",
+    "python-decouple~=3.8.0",
+]
 
 [project.optional-dependencies]
 dev = ["pytest==8.3.3", "pytest-mock==3.14.0", "httpx~=0.27.2"]

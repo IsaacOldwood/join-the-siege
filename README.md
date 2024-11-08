@@ -6,6 +6,7 @@
         1. Development data (the files in `files` directory) should not be checked into the repo. This bloats the repo and will slow down cloning, builds etc. These should be stored in a shared file location and the directory should be git ignored. Downloading the files from the shared location should be part of an initial repo/project setup step. This setup guide should be contained clearly in the readme.
         1. Move utility functions out of `app.py`. `app.py` should be the top level/HTTP logic and nothing else. Utility functions should be moved to another file. I have created a `utils.py` file FOR NOW. `utils.py` is fine to have but can quickly grow and become a burden. It is very important that as functions get added they are grouped together and pulled into their own better named files.
         1. `classify_file` is not a good name for an endpoint for two main reasons. `_` should be avoided in `URLs`, `-` should be used instead. Also it is widely accepted that endpoints should not be verbs. API endpoints should be nouns representing a resource. In this case it is a POST endpoint (POST = Create), so we are "creating" a file classification. This means we should rename it to `file-classification`. I would also rename the function to `file_classification`, I don't think `_route` is required as we know it's a route with it's decorator. If we were to register the endpoints in a different way it may be preferable in the future.
+        1. `ALLOWED_EXTENSIONS` should be a config variable. One reason is due to separating deployment and release, this can then allow this to be used like a feature flag.
 
 1. Overhaul current design to use familiar technologies
     - For a basic RESTAPI I personally prefer using FastAPI. As the application is currently very simple swapping technologies/frameworks is possible. I find FastAPI to be easier. Easier meaning it required less code and knowledge to use. This allows for a faster development velocity. It has other improvements too. It is built on top of Pydantic which allows for easy request and object validation amongst many other things. It also automatically integrates with OpenAPI schema and swagger. All RestAPIs should have an OpenAPI compatible schema and swagger docs, so because FastAPI does that for you. We can spend more developer time building features and adding value. I also find testing FastAPI applications to be easier. And using FastAPI `Depends()` is a great way to comply with separation of concerns and Dependency Injection. Both of which improve testability. Better testing => less bugs (in theory).
@@ -21,6 +22,7 @@ A RestAPI to classify files.
 (Assuming Windows)
 
 1. Copy development files from shared location into `local-files` dir
+1. Create `.env` file for environment variables. These values can be fetched from the `dev` environment
 1. Install project as editable install (include dev dependencies)
 
     ```shell
