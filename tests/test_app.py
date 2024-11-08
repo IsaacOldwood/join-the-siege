@@ -54,7 +54,7 @@ def test_not_supported_file_type(test_client, app_settings):
 
 def test_success(test_client, mocker, app_settings):
     app_settings({"ALLOWED_EXTENSIONS": "pdf,png,jpg"})
-    mocker.patch("src.app.classify_file", return_value="test_class")
+    mocker.patch("src.app.FilenameClassifier.classify", return_value="test_class")
 
     data = {"file": ("file.pdf", BytesIO(b"dummy content"))}
     response = test_client.post("/file-classification", files=data)

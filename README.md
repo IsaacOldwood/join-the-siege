@@ -11,6 +11,21 @@
 1. Overhaul current design to use familiar technologies
     - For a basic RESTAPI I personally prefer using FastAPI. As the application is currently very simple swapping technologies/frameworks is possible. I find FastAPI to be easier. Easier meaning it required less code and knowledge to use. This allows for a faster development velocity. It has other improvements too. It is built on top of Pydantic which allows for easy request and object validation amongst many other things. It also automatically integrates with OpenAPI schema and swagger. All RestAPIs should have an OpenAPI compatible schema and swagger docs, so because FastAPI does that for you. We can spend more developer time building features and adding value. I also find testing FastAPI applications to be easier. And using FastAPI `Depends()` is a great way to comply with separation of concerns and Dependency Injection. Both of which improve testability. Better testing => less bugs (in theory).
 
+1. Improve extendability. Currently the classifier is used directly in `app.py`. However as we said above, that should be for top level/HTTP logic. There isn't anything wrong with this as it is in a function. But: 
+
+    What if we want to create different classifiers? 
+
+    How will they fit in? 
+
+    What if we want to allow users to post a URL to a file? 
+
+    What if we want to allow multiple files to be uploaded? 
+    
+    It isn't necessarily easy to expand and extend. There are a couple of ways we can improve this. Firstly we should decide on an interface for all our classifiers to use. Then we can create more classifiers and know they will slot into our app easily. We can either use an ABC or just duck typing to "enforce" this. We are not saying this interface will be set in stone but the more we can decide on now will reduce the burden of change later down the line. Ideally we would sit down in person with a whiteboard and do some brainstorming and designing but as it's just me we can imagine that part happened.
+
+    So now we have decided that classifiers should be a class. They can take in whatever they need in the `init` and then when we are ready the classification logic can be called using `classify()`. This leaves it very generic and does not tie us down to much to allow easy expansion.
+
+
 # File Classifier
 
 ## Overview
