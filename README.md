@@ -8,21 +8,38 @@
 1. Overhaul current design to use familiar technologies
     - For a basic RESTAPI I personally prefer using FastAPI. As the application is currently very simple swapping technologies/frameworks is possible.
 
-# Project setup
+# File Classifier
+
+## Overview
+
+A RestAPI to classify files.
+
+## First time project setup
+
 (Assuming Windows)
 
 1. Copy development files from shared location into `local-files` dir
-1. Install project as editable install (include dev dependencies) 
+1. Install project as editable install (include dev dependencies)
+
     ```shell
     python -m venv venv
     venv\Scripts\activate
     py -m pip install -e .[dev]
     ```
+
 1. Run the app
+
     ```shell
     py -m python -m src.app
     ```
 
+## Testing
+
+Run tests using pytest
+
+```shell
+py -m pytest
+```
 
 ---
 # Heron Coding Challenge - File Classifier
