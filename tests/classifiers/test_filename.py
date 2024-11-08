@@ -10,7 +10,7 @@ import pytest
         ("drivers_license.jpg", "drivers_licence"),
         ("bank_statement.jpg", "bank_statement"),
         ("invoice.jpg", "invoice"),
-        ("aiwhgbipawebg.txt", "unknown file"),
+        ("aiwhgbipawebg.txt", None),
     ],
 )
 @pytest.mark.asyncio

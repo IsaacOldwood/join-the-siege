@@ -12,6 +12,7 @@ dependencies = [
     "python-multipart~=0.0.17",
     "uvicorn[standard]~=0.32.0",
     "python-decouple~=3.8.0",
+    "openai~=1.35",
 ]
 
 [project.optional-dependencies]

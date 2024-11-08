@@ -1,7 +1,7 @@
 from werkzeug.datastructures import FileStorage
 
 
-class FilenameClassifier:
+class FileContentsClassifier:
     def __init__(self, file: FileStorage):
         """Classify a file based on its name."""
         self.file = file
@@ -11,13 +11,14 @@ class FilenameClassifier:
 
         filename = self.file.filename.lower()
 
-        if "drivers_license" in filename:
-            return "drivers_licence"
+        if not filename.endswith(".csv"):
+            return None
 
-        if "bank_statement" in filename:
-            return "bank_statement"
+        file_contents = await self.file.read()
 
-        if "invoice" in filename:
+        file_contents = file_contents.decode("utf-8")
+
+        if "invoice" in file_contents:
             return "invoice"
 
         return None

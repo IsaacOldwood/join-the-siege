@@ -37,6 +37,22 @@
 
     See `pipeline/pipeline.yml` for a quick example. To test, code coverage, check lint rules using Azure.
 
+    Side note: To deploy this application to production I would use Azure Serverless functions. This is currently a simple app and the less infra setup the better. Better to spend developer time on features for clients than infra and hosting. If necessary it can be moved in the future. It is also very easy to control access then. Can easily wrap it in API key auth etc.
+
+1. Now our app is ready to be worked on. Because we have spent the time laying the ground work we can quickly add new features and improvements. This will pay dividends going forward. Further improvements:
+ 
+    - Crudely classify by file contents
+    - Train some ML models to classify based on contents, filename, client, industry etc
+    - Use pre-trained models. ChatGPT or one of many others. This would be my first approach as there is no point wasting time and resources if ChatGPT can give a half decent answer.
+    - Use a multi-model approach. Try and use cheaper, faster methods. If they don't work then pass the file to a more advanced ML model.
+    - Allow other upload methods. Allow users to post a URL link to the file. We can then download and classify the file.
+    - When a user uploads a file we fail to classify, save it somewhere and raise it in a dashboard/alert channel.
+    - When a user uploads a file not currently supprted, save it and raise it. If lots of people are trying type X then maybe we should spend some time there.
+
+    The MAIN thing to keep in mind is "Our highest priority is to satisfy the customer through early and continuous delivery of valuable software." There is no point spending weeks on features you THINK people want. Get SOMETHING into the hands of users and see how they use it and if they actually like it.
+
+Thank you for looking at my repo.
+
 # File Classifier
 
 ## Overview
