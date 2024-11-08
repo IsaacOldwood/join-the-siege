@@ -11,7 +11,7 @@
 # Project setup
 (Assuming Windows)
 
-1. Copy development files from shared location into `files` dir
+1. Copy development files from shared location into `local-files` dir
 1. Install project as editable install (include dev dependencies) 
     ```shell
     python -m venv venv
