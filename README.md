@@ -10,6 +10,7 @@
 
 1. Overhaul current design to use familiar technologies
     - For a basic RESTAPI I personally prefer using FastAPI. As the application is currently very simple swapping technologies/frameworks is possible. I find FastAPI to be easier. Easier meaning it required less code and knowledge to use. This allows for a faster development velocity. It has other improvements too. It is built on top of Pydantic which allows for easy request and object validation amongst many other things. It also automatically integrates with OpenAPI schema and swagger. All RestAPIs should have an OpenAPI compatible schema and swagger docs, so because FastAPI does that for you. We can spend more developer time building features and adding value. I also find testing FastAPI applications to be easier. And using FastAPI `Depends()` is a great way to comply with separation of concerns and Dependency Injection. Both of which improve testability. Better testing => less bugs (in theory).
+    - FastAPI swagger integration also automatically takes the docstring of the decorated function to help users understand the endpoint.
 
 1. Improve extendability. Currently the classifier is used directly in `app.py`. However as we said above, that should be for top level/HTTP logic. There isn't anything wrong with this as it is in a function. But: 
 

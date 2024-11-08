@@ -8,6 +8,7 @@ app = FastAPI()
 
 @app.post("/file-classification")
 async def file_classification(file: UploadFile):
+    """Classify a file based on its contents, filename and other attributes using our state of the art AI model."""
     if file.filename == "":
         raise HTTPException(status_code=400, detail="No selected file")
 
