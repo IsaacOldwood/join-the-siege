@@ -1,3 +1,30 @@
+# Notes & Thought process
+
+1. Clean up repo
+    - There are some design choices that can be improved. The earlier these changes are done the easier they are to implement.
+        1. `requirements.txt` -> `pyproject.toml`. Moving to use pyproject allows all configuration for the project to be stored in one central location. This includes linter rules (ruff), dependencies, test config (pytest). It also allows easier splitting of dependencies and dev dependencies, this is valuable as we don't want production servers to install dev dependencies, this will keep it as lightweight as possible. At least the previous 3 python versions should be supported ideally too, this is possible to set in `pyproject.toml`. However I will be using `3.11` and not testing for previous compatibility for time.
+        1. Development data (the files in `files` directory) should not be checked into the repo. This bloats the repo and will slow down cloning, builds etc. These should be stored in a shared file location and the directory should be git ignored. Downloading the files from the shared location should be part of an initial repo/project setup step. This setup guide should be contained clearly in the readme.
+
+1. Overhaul current design to use familiar technologies
+    - For a basic RESTAPI I personally prefer using FastAPI. As the application is currently very simple swapping technologies/frameworks is possible.
+
+# Project setup
+(Assuming Windows)
+
+1. Copy development files from shared location into `files` dir
+1. Install project as editable install (include dev dependencies) 
+    ```shell
+    python -m venv venv
+    venv\Scripts\activate
+    py -m pip install -e .[dev]
+    ```
+1. Run the app
+    ```shell
+    py -m python -m src.app
+    ```
+
+
+---
 # Heron Coding Challenge - File Classifier
 
 ## Overview

@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "join_the_seige"
+version = "0"
+requires-python = ">= 3.11"
+
+dependencies = ["Flask==3.0.3"]
+
+[project.optional-dependencies]
+dev = ["pytest==8.3.3", "pytest-mock==3.14.0"]
