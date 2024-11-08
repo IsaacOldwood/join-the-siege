@@ -27,6 +27,16 @@
 
 1. Scaling and async. Currently our application is entirely synchronous. Currently this isn't a problem as we have no heavy I/O operations. But in the future we might use some 3rd party API in our classification step. HTTP requests take a relatively long time so if our app can be classifying other things whilst we wait that will make the whole app scale better! If we start building it async now it will make our lives easier in the future. FastAPI endpoints can be async out the box so we just need to update our functions and everything should run smoothly.
 
+1. When is the best time to build the CI/CD pipeline? When you're ready to deploy to `prod` or even `dev` is not the right answer. The sooner the better. The sooner you can get feedback from your build pipeline the better. Build pipelines enforce LOTs of things that your app needs to follow. Even if you aren't sure where you are PUTTING your build (Azure, AWS, GCP, On-prem) it is still worth making sure the application (and your developers) are following all the guidelines you've agreed. Some things that should be enforced in the CI/CD pipeline:
+
+    - Linter rules - are all the ruff rules you've agreed to follow being adhered to?
+    - Tests - Do all your tests actually pass and on a machine that isn't yours?
+    - Test coverage - Please follow "Goodhart's law" and don't enforce this. But you should be aware of your test coverage.
+    - Does your application build successfully? This is where you realise you've not pinned a dependency and all of sudden the build breaks, and many other gotchas aren't revealed until this step
+    - Can your application be deployed? - Less necessary to start with
+
+    See `pipeline/pipeline.yml` for a quick example. To test, code coverage, check lint rules using Azure.
+
 # File Classifier
 
 ## Overview
